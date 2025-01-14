@@ -18,15 +18,16 @@ import 'package:firebase_core/firebase_core.dart';
                     storageBucket: "testdbnosql.firebasestorage.app",
                     messagingSenderId: "310680659215",
                     appId: "1:310680659215:web:383c8eb99ab0fcd0fb8a7a",
-                    measurementId: "G-JWLX6YG6DC"
+                    measurementId: "G-JWLX6YG6DC",
+                    databaseURL: "https://testdbnosql-default-rtdb.firebaseio.com"
           );
 
-
         static const FirebaseOptions android = FirebaseOptions(
-          apiKey: 'AIzaSyC73NhSVTl8hMuL8SKAtX47H6hrmCtgbpM', // Replace with your API Key
-          appId: '1:310680659215:android:2d2241d077bcec09fb8a7a', // Replace with your App ID
-          messagingSenderId: '310680659215',  // Replace with your Messaging Sender ID
-          projectId: 'testdbnosql',   // Replace with your Project ID
-          storageBucket: 'testdbnosql.firebasestorage.app',  // Replace with your storage bucket
+          apiKey: 'AIzaSyC73NhSVTl8hMuL8SKAtX47H6hrmCtgbpM',
+          appId: '1:310680659215:android:2d2241d077bcec09fb8a7a',
+          messagingSenderId: '310680659215',
+          projectId: 'testdbnosql',
+          storageBucket: 'testdbnosql.firebasestorage.app',
+          databaseURL: "https://testdbnosql-default-rtdb.firebaseio.com"
         );
         }
