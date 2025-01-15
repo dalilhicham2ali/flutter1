@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Pour les icônes Google Maps
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'firebase_options.dart';
 
@@ -38,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> _searchResults = [];
   List<Map<String, dynamic>> _allPharmacies = [];
   bool _isSearching = false;
+  int? _selectedIndex; // Index de la ligne actuellement cliquée
 
   @override
   void initState() {
@@ -104,6 +105,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Recherche Pharmacie'),
+        centerTitle: true, // Centre le titre
       ),
       body: SafeArea(
         child: Padding(
@@ -127,65 +129,137 @@ class _HomePageState extends State<HomePage> {
               if (_isSearching)
                 const Center(child: CircularProgressIndicator())
               else
-                ..._searchResults.map((result) {
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _searchResults.length,
+                    itemBuilder: (context, index) {
+                      final result = _searchResults[index];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  result["nom"] ?? 'Nom non spécifié',
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0, vertical: 4.0),
-                                decoration: BoxDecoration(
-                                  color: (result['disponible'] == true)
-                                      ? Colors.green
-                                      : Colors.red,
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
-                                child: Text(
-                                  (result['disponible'] == true)
-                                      ? 'Disponible'
-                                      : 'Non disponible',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedIndex =
+                                    (_selectedIndex == index) ? null : index;
+                              });
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.only(bottom: 8.0),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            result["nom"] ??
+                                                'Nom non spécifié',
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          const SizedBox(width: 20),
+                                          Text(
+                                            result["ville"] ??
+                                                'Ville non spécifiée',
+                                            style: const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.orange),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 12.0,
+                                              vertical: 4.0),
+                                          decoration: BoxDecoration(
+                                            color: (result['disponible'] ==
+                                                    true)
+                                                ? Colors.green
+                                                : Colors.red,
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
+                                          ),
+                                          child: Text(
+                                            (result['disponible'] == true)
+                                                ? 'Disponible'
+                                                : 'Non disponible',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        if (result["googlemap"] != null)
+                                          IconButton(
+                                            icon: const FaIcon(
+                                              FontAwesomeIcons.mapMarkerAlt,
+                                              color: Colors.red,
+                                            ),
+                                            onPressed: () {
+                                              _launchURL(
+                                                  result["googlemap"] ?? '');
+                                            },
+                                          ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              if (result["googlemap"] != null)
-                                IconButton(
-                                  icon: const FaIcon(
+                            ),
+                          ),
+                          // Affichage dynamique des détails sous la ligne cliquée
+                          if (_selectedIndex == index)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Adresse: ${result["adresse"] ?? "Non spécifiée"}',
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  Text(
+                                    'Téléphone: ${result["telephone"] ?? "Non spécifié"}',
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'lien vers google maps',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                      IconButton(
+                                    icon: const FaIcon(
                                     FontAwesomeIcons.mapMarkerAlt,
                                     color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                    _launchURL(
+                                    result["googlemap"] ?? '');
+                                    },
+                                    ),
+                                    ],
                                   ),
-                                  onPressed: () {
-                                    _launchURL(result["googlemap"] ?? '');
-                                  },
-                                ),
-                            ],
-                          ),
+                                  
+                                ],
+                              ),
+                            ),
                         ],
-                      ),
-                    ),
-                  );
-                }).toList(),
+                      );
+                    },
+                  ),
+                ),
             ],
           ),
         ),
