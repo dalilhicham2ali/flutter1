@@ -235,9 +235,9 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   Row(
                                     children: [
-                                      Text(
+                                      const Text(
                                         'lien vers google maps',
-                                        style: const TextStyle(fontSize: 16),
+                                        style: TextStyle(fontSize: 16),
                                       ),
                                       IconButton(
                                     icon: const FaIcon(

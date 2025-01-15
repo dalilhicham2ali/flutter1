@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "310680659215",
+    "firebase_url": "https://testdbnosql-default-rtdb.firebaseio.com",
     "project_id": "testdbnosql",
     "storage_bucket": "testdbnosql.firebasestorage.app"
   },
